@@ -1,0 +1,114 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!1001 &100100000
+Prefab:
+  m_ObjectHideFlags: 1
+  serializedVersion: 2
+  m_Modification:
+    m_TransformParent: {fileID: 0}
+    m_Modifications: []
+    m_RemovedComponents: []
+  m_ParentPrefab: {fileID: 0}
+  m_RootGameObject: {fileID: 1432534990485642}
+  m_IsPrefabParent: 1
+--- !u!1 &1432534990485642
+GameObject:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  serializedVersion: 5
+  m_Component:
+  - component: {fileID: 4973427167571010}
+  - component: {fileID: 114215078099803504}
+  m_Layer: 0
+  m_Name: EmotePlayer-RenderTexture
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &4973427167571010
+Transform:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1432534990485642}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_RootOrder: 0
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &114215078099803504
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1432534990485642}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7171b08802244a3488b2d25424675b1b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  toggleAppearance: 1
+  mPSBFile: {fileID: 0}
+  mPreloadTextAsset: {fileID: 4900000, guid: 99c3c93391e4381459511df949a0461a, type: 3}
+  mPreloadTextureList:
+  - {fileID: 2800000, guid: e8a71973c295c424e924422b2c904864, type: 3}
+  mStepUpdate: 0
+  updateTiming: 1
+  mMeshDivisionRatio: 1
+  mainColor: {r: 1, g: 1, b: 1, a: 1}
+  mVertexColor: {r: 0.5, g: 0.5, b: 0.5, a: 1}
+  toggleTransform: 1
+  mCoord: {x: 0, y: 0}
+  mScale: 1
+  mRot: 0
+  mGrayscale: 0
+  convolveObjectTransformToPhysics: 1
+  mFixedScale: 0
+  toggleStereovision: 0
+  mStereovisionEnabled: 0
+  stereoVisionLeftEyeLayer: 0
+  stereoVisionRightEyeLayer: 0
+  mStereovisionVolume: 1
+  mStereovisionParallaxRatio: 0
+  toggleBehavior: 1
+  mApplyTimeScale: 1
+  speed: 1
+  mHairScale: 1
+  mBustScale: 1
+  mPartsScale: 1
+  mWindSpeed: 0
+  mWindPowMin: 0
+  mWindPowMax: 2
+  toggleTimeline: 1
+  mMainTimelineLabel: 
+  mDiffTimelineLabel: 
+  mDiffTimelineBlendRatio: 1
+  mDiffTimelineSlot1: 
+  mDiffTimelineSlot2: 
+  mDiffTimelineSlot3: 
+  mDiffTimelineSlot4: 
+  mDiffTimelineSlot5: 
+  mDiffTimelineSlot6: 
+  diffTimelineFadeOutTime: 0.3
+  toggleVariable: 1
+  variableTransitionTime: 0.25
+  variableTransitionEasing: 0
+  mTransformAlignment: 4
+  _mapToRenderTexture: 1
+  _renderTextureResolutionCorrection: 1
+  toggleRenderTexture: 1
+  _texWidth: 1024
+  _texHeight: 512
+  _renderTextureMargin: 0.1
+  _renderTextureMesh: {fileID: 0}
+  _clipRednerTexutre: 0
+  _renderTextureClipRect:
+    serializedVersion: 2
+    x: -0.5
+    y: -0.5
+    width: 1
+    height: 1
