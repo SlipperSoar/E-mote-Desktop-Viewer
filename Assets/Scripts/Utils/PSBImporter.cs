@@ -6,12 +6,12 @@ using UnityEngine;
 public static class PSBImporter
 {
     private static List<string> psbPathes;
-    public static List<EmoteAsset> emoteAssets;
+    public static List<byte[]> emoteBytes;
 
     static PSBImporter()
     {
         psbPathes = new List<string>();
-        emoteAssets = new List<EmoteAsset>();
+        emoteBytes = new List<byte[]>();
 
         var dataPath = Application.streamingAssetsPath;
         DirectoryInfo directoryInfo = new DirectoryInfo(dataPath);
@@ -30,8 +30,7 @@ public static class PSBImporter
 
         foreach (var path in psbPathes)
         {
-            EmoteAssetRequest req = new EmoteAssetRequest(new string[] { path }, true);
-            emoteAssets.Add(new EmoteAsset());
+            emoteBytes.Add(File.ReadAllBytes(path));
         }
     }
 }

@@ -3363,8 +3363,8 @@ To supress this warning, please check the appropriate setting in E-mote Global S
         if (asset.rawFileImage != null)
             psbList.Add(asset.rawFileImage);
         
-      if (psbList.Count == 0)
-        return false;
+        if (psbList.Count == 0)
+            return false;
         
         if (!mInitialized) {
             InitDrawResources();

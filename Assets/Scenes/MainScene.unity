@@ -759,7 +759,7 @@ MonoBehaviour:
   muteHysteresisRangeMin: 1
   muteHysteresisRangeMax: 2
   transitionInterval: 0.03
-  showStatus: 1
+  showStatus: 0
   statusStyle:
     m_Name: 
     m_Normal:
