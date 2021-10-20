@@ -1,17 +1,23 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.IO;
+using FreeMote;
+using FreeMote.Psb;
+using FreeMote.Psb.Textures;
+using FreeMote.Psb.Types;
+using FreeMote.Plugins;
+using FreeMote.Plugins.Images;
+using FreeMote.Plugins.Audio;
 using UnityEngine;
 
 public static class PSBImporter
 {
     private static List<string> psbPathes;
-    public static List<byte[]> emoteBytes;
+    private static List<byte[]> emotes;
 
     static PSBImporter()
     {
         psbPathes = new List<string>();
-        emoteBytes = new List<byte[]>();
 
         var dataPath = Application.streamingAssetsPath;
         DirectoryInfo directoryInfo = new DirectoryInfo(dataPath);
@@ -30,7 +36,9 @@ public static class PSBImporter
 
         foreach (var path in psbPathes)
         {
-            emoteBytes.Add(File.ReadAllBytes(path));
+            PSB psb = new PSB(path);
+            PsbFile psbFile = new PsbFile(path);
+            
         }
     }
 }

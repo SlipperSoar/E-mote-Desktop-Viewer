@@ -41,9 +41,6 @@ public class EmoteWindow : MonoBehaviour
         mouseButtonDown = false;
         pressTime = 0f;
 #if !UNITY_EDITOR && UNITY_STANDALONE_WIN
-        WinAPI.InitWindowHandle();
-        WinAPI.HideWindowTitleBar();
-#endif
         switch (style)
         {
             case WindowStyle.WinTop:
@@ -57,6 +54,7 @@ public class EmoteWindow : MonoBehaviour
                 WinAPI.PenetrateWindow();
                 break;
         }
+#endif
     }
 
     void Update()
@@ -68,7 +66,7 @@ public class EmoteWindow : MonoBehaviour
             mouseButtonDown = true;
             return;
         }
-        if (mouseButtonDown && pressTime >= 0.1f)
+        if (mouseButtonDown && pressTime >= 0.02f)
         {
             //这样做为了区分界面上面其它需要滑动的操作
             WinAPI.ReleaseCapture();

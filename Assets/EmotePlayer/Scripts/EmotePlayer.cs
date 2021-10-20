@@ -3379,15 +3379,15 @@ To supress this warning, please check the appropriate setting in E-mote Global S
             PSBRef[] psbRefArray = new PSBRef[psbList.Count];
             GCHandle[] gchArray = new GCHandle[psbList.Count];
             for (int i = 0; i < psbList.Count; i++) {
-              byte[] image = psbList[i];
-              int size = image.Length;
-              GCHandle gch = GCHandle.Alloc(image, GCHandleType.Pinned);
-              psbRefArray[i] = new PSBRef(gch.AddrOfPinnedObject(), size);
-              gchArray[i] = gch;
+                byte[] image = psbList[i];
+                int size = image.Length;
+                GCHandle gch = GCHandle.Alloc(image, GCHandleType.Pinned);
+                psbRefArray[i] = new PSBRef(gch.AddrOfPinnedObject(), size);
+                gchArray[i] = gch;
             }
             mPlayerRef = new EmotePlayerRef(psbRefArray, psbRefArray.Length);
             foreach (GCHandle g in gchArray)
-              g.Free();
+                g.Free();
             mPlayerID = mPlayerRef.playerID;
             // テクスチャ
             ExtractBuiltinTextureImage();

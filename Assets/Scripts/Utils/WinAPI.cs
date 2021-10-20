@@ -54,6 +54,7 @@ public static class WinAPI
     #region properties
 
     public static IntPtr ThisWindowHandle;
+    public static Vector2Int WindowSize;
 
     #endregion
 
@@ -94,6 +95,12 @@ public static class WinAPI
 
     #endregion
 
+    static WinAPI()
+    {
+        WindowSize = new Vector2Int(240, 560);
+        InitWindowHandle();
+    }
+
     #region Public Method
 
     public static void InitWindowHandle()
@@ -129,21 +136,21 @@ public static class WinAPI
     /// </summary>
     public static void MinimizeWindow()
     {
-        ShowWindow(GetForegroundWindow(), WinAPI.SW_SHOWMINIMIZED);
+        ShowWindow(GetForegroundWindow(), SW_SHOWMINIMIZED);
     }
 
     public static void RemoveFrame()
     {
         SetWindowLong(ThisWindowHandle, GWL_STYLE, WS_POPUP);
 
-        SetWindowPos(ThisWindowHandle, -1, 0, 0, 1024, 768, SWP_SHOWWINDOW);
+        SetWindowPos(ThisWindowHandle, -1, 0, 0, WindowSize.x, WindowSize.y, SWP_SHOWWINDOW);
     }
 
     public static void RemoveFrameWithAlpha()
     {
         // SetWindowLong(ThisWindowHandle, GWL_EXSTYLE, WS_EX_LAYERED);
-        SetWindowLong(ThisWindowHandle, GWL_STYLE, GetWindowLong(ThisWindowHandle, GWL_STYLE) & ~WS_BORDER & ~WS_CAPTION);
-        SetWindowPos(ThisWindowHandle, -1, 0, 0, 1024, 768, SWP_SHOWWINDOW);
+        SetWindowLong(ThisWindowHandle, GWL_STYLE, GetWindowLong(ThisWindowHandle, GWL_STYLE) & WS_POPUP & ~WS_BORDER & ~WS_CAPTION | WS_VISIBLE);
+        SetWindowPos(ThisWindowHandle, -1, Screen.width / 2, Screen.height / 2, WindowSize.x, WindowSize.y, SWP_SHOWWINDOW);
 
         var margins = new MARGINS() { cxLeftWidth = -1 };
         DwmExtendFrameIntoClientArea(ThisWindowHandle, ref margins);
