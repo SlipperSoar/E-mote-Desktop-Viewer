@@ -1045,7 +1045,7 @@ public class EmotePlayer : MonoBehaviour {
         if (mPreloadTextAsset == null)
             return null;
         EmoteAsset result = new EmoteAsset();
-        result.files.Add(mPreloadTextAsset);
+        result.files.Add(mPreloadTextAsset.bytes);
         result.textures.AddRange(mPreloadTextureList);
         return result;
     }
@@ -2901,9 +2901,9 @@ public class EmotePlayer : MonoBehaviour {
             asset = LoadAsset(data, bundle);
         } else if (data is EmoteAsset) {
             asset = (EmoteAsset) data;
-        } else if (data is TextAsset) {
+        } else if (data is byte[]) {
             asset = new EmoteAsset();
-            asset.files.Add((TextAsset)data);
+            asset.files.Add((byte[])data);
             if (! supressBuiltinTextureImageWarning) {
                 Debug.LogWarning(@"
 The TextAsset object was passed as an argument to the LoadData() method.
@@ -3359,7 +3359,7 @@ To supress this warning, please check the appropriate setting in E-mote Global S
                 return false;
         }
         
-        List<byte[]> psbList = asset.files.Select(x => x.bytes).ToList();
+        List<byte[]> psbList = asset.files;
         if (asset.rawFileImage != null)
             psbList.Add(asset.rawFileImage);
         
@@ -4830,7 +4830,7 @@ public class EmoteDeviceManager
 public class EmoteAsset
 {
     public byte[] rawFileImage;
-    public List<TextAsset> files = new List<TextAsset>();
+    public List<byte[]> files = new List<byte[]>();
     public List<Texture2D> textures = new List<Texture2D>();
 };
 
@@ -4840,7 +4840,7 @@ public class EmoteAssetRequest : CustomYieldInstruction
         EmoteAssetRequest owner;
         private string path;
         private int count;
-        public List<TextAsset> files = new List<TextAsset>();
+        public List<byte[]> files = new List<byte[]>();
         public List<Texture2D> textures = new List<Texture2D>();
         private bool done;
         private bool async;
@@ -4914,7 +4914,7 @@ public class EmoteAssetRequest : CustomYieldInstruction
             }
             if (count == 0) {
                 TextAsset file = (TextAsset)resultObject;
-                files.Add(file);
+                files.Add(file.bytes);
             } else {
                 Texture2D texture = (Texture2D)resultObject;
                 textures.Add(texture);

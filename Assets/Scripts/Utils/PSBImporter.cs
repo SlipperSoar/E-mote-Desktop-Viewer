@@ -8,7 +8,7 @@ using FreeMote.Psb.Types;
 using FreeMote.Plugins;
 using FreeMote.Plugins.Images;
 using FreeMote.Plugins.Audio;
-// using FreeMote.PsBuild;
+using FreeMote.PsBuild;
 using UnityEngine;
 
 public static class PSBImporter
@@ -41,19 +41,52 @@ public static class PSBImporter
         var ctx = FreeMount.CreateContext();
         foreach (var path in psbPathes)
         {
-            using var fs = File.OpenRead(path);
-            string currentType = null;
-            using var ms = ctx.OpenFromShell(fs, ref currentType);
-            var psb = ms != null ? new PSB(ms) : new PSB(fs);
-            if (psb.Platform == PsbSpec.krkr)
+            Debug.Log($"current PSB File Path: {path}");
+            try
             {
-                Debug.Log("Platform: Krkr");
-                // psb.SwitchSpec(PsbSpec.win, PsbSpec.win.DefaultPixelFormat());
+                var psbFile = new PsbFile(path);
+                var headerValid = psbFile.TestHeaderEncrypted();
+                var bodyValid = psbFile.TestBodyEncrypted();
+                Debug.Log($"header valid?: {headerValid}");
+                Debug.Log($"body valid?: {bodyValid}");
+                // var psb = PSB.DullahanLoad(path);
+                // PSB psb = new PSB(path);
+                // emotes.Add(psb.Build());
+                if (headerValid && bodyValid)
+                {
+                    emotes.Add(File.ReadAllBytes(path));
+                }
+                else
+                {
+                    
+                }
             }
-            psb.FixMotionMetadata();
-            psb.Merge();
-            emotes.Add(psb.Build());
-            // emotes.Add(File.ReadAllBytes(path));
+            catch (System.Exception e1)
+            {
+                try
+                {
+                    using var fs = File.OpenRead(path);
+                    string currentType = null;
+                    using var ms = ctx.OpenFromShell(fs, ref currentType);
+                    Debug.Log($"memory stream: {ms}");
+                    var psb = ms != null ? new PSB(ms) : new PSB(fs);
+                    if (psb.Platform == PsbSpec.krkr)
+                    {
+                        Debug.Log("Platform: Krkr");
+                        psb.SwitchSpec(PsbSpec.win, PsbSpec.win.DefaultPixelFormat());
+                    }
+                    psb.FixMotionMetadata();
+                    psb.Merge();
+                    emotes.Add(psb.Build());
+                    // emotes.Add(File.ReadAllBytes(path));
+                }
+                catch (System.Exception e2)
+                {
+                    Debug.LogError($"error1: {e1.Message}, error2: {e2.Message}");
+                    continue;
+                }
+            }
+            
         }
     }
 }

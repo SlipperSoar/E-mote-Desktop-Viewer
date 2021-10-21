@@ -13,7 +13,9 @@ public class EmoteLoader : MonoBehaviour
         emoteAssets = new List<EmoteAsset>();
         foreach (var bytes in PSBImporter.Emotes)
         {
-            emoteAssets.Add(new EmoteAsset() { rawFileImage = bytes });
+            EmoteAsset emoteAsset = new EmoteAsset();
+            emoteAsset.files.Add(bytes);
+            emoteAssets.Add(emoteAsset);
         }
         LoadToEmotePlayer();
     }
