@@ -66,7 +66,7 @@ public class EmoteWindow : MonoBehaviour
             mouseButtonDown = true;
             return;
         }
-        if (mouseButtonDown && pressTime >= 0.02f)
+        if (mouseButtonDown && pressTime >= 0.01f)
         {
             //这样做为了区分界面上面其它需要滑动的操作
             WinAPI.ReleaseCapture();

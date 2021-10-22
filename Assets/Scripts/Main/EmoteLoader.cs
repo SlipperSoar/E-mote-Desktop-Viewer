@@ -13,10 +13,10 @@ public class EmoteLoader : MonoBehaviour
     void Start()
     {
         emoteAssets = new List<EmoteAsset>();
-        foreach (var bytes in PSBImporter.Emotes)
+        foreach (var psb in PSBImporter.Emotes)
         {
             EmoteAsset emoteAsset = new EmoteAsset();
-            emoteAsset.files.Add(bytes);
+            emoteAsset.files.Add(psb.bytes);
             emoteAssets.Add(emoteAsset);
         }
         LoadToEmotePlayer();
@@ -26,7 +26,7 @@ public class EmoteLoader : MonoBehaviour
 
     private void LoadToEmotePlayer(int index = 0)
     {
-        log.text = $"path: {Application.streamingAssetsPath}\n count: {emoteAssets.Count}";
+        log.text = $"{log.text}\n count: {emoteAssets.Count}";
         emotePlayer.LoadData(emoteAssets[index]);
     }
 

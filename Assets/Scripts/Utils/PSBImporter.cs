@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using System.IO;
 using FreeMote;
 using FreeMote.Psb;
@@ -11,17 +12,21 @@ using FreeMote.Plugins.Audio;
 using FreeMote.PsBuild;
 using UnityEngine;
 
+public class PsbInfo
+{
+    public string name;
+    public string path;
+    public byte[] bytes;
+}
+
 public static class PSBImporter
 {
-    private static List<string> psbPathes;
-    private static List<byte[]> emotes;
-    public static List<byte[]> Emotes => emotes;
-    public static List<string> PsbPathes => psbPathes;
+    private static List<PsbInfo> emotes;
+    public static List<PsbInfo> Emotes => emotes;
 
     static PSBImporter()
     {
-        psbPathes = new List<string>();
-        emotes = new List<byte[]>();
+        emotes = new List<PsbInfo>();
 
         var dataPath = Application.streamingAssetsPath;
         DirectoryInfo directoryInfo = new DirectoryInfo(dataPath);
@@ -35,12 +40,13 @@ public static class PSBImporter
             }
             Debug.Log($"File Extension: {file.Extension} Name: {file.Name}");
             var path = $"{dataPath}/{file.Name}";
-            psbPathes.Add(path);
+            emotes.Add(new PsbInfo() { name = file.Name, path = path });
         }
 
         FreeMount.Init();
-        foreach (var path in psbPathes)
+        foreach (var emote in emotes)
         {
+            var path = emote.path;
             Debug.Log($"current PSB File Path: {path}");
             try
             {
@@ -51,18 +57,18 @@ public static class PSBImporter
                 Debug.Log($"body valid?: {bodyValid}");
                 if (headerValid && bodyValid)
                 {
-                    emotes.Add(File.ReadAllBytes(path));
+                    emote.bytes = File.ReadAllBytes(path);
                 }
                 else
                 {
-                    LoadEmoteBytes(path);
+                    LoadEmoteBytes(emote);
                 }
             }
             catch (System.Exception e1)
             {
                 try
                 {
-                    LoadEmoteBytes(path);
+                    LoadEmoteBytes(emote);
                 }
                 catch (System.Exception e2)
                 {
@@ -70,16 +76,17 @@ public static class PSBImporter
                     continue;
                 }
             }
-            
         }
+
+        emotes = emotes.Where(info => info.bytes != null).ToList();
     }
 
-    private static void LoadEmoteBytes(string path)
+    private static void LoadEmoteBytes(PsbInfo psbInfo)
     {
         var ctx = FreeMount.CreateContext();
         try
         {
-            using var fs = File.OpenRead(path);
+            using var fs = File.OpenRead(psbInfo.path);
             string currentType = null;
             using var ms = ctx.OpenFromShell(fs, ref currentType);
             Debug.Log($"memory stream: {ms}");
@@ -91,7 +98,7 @@ public static class PSBImporter
             }
             psb.FixMotionMetadata();
             psb.Merge();
-            emotes.Add(psb.Build());
+            psbInfo.bytes = psb.Build();
         }
         catch (System.Exception e)
         {
