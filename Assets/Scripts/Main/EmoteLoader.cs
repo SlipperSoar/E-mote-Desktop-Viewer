@@ -1,10 +1,12 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class EmoteLoader : MonoBehaviour
 {
     [SerializeField] private EmotePlayer emotePlayer;
+    [SerializeField] private Text log;
 
     private List<EmoteAsset> emoteAssets;
 
@@ -24,6 +26,7 @@ public class EmoteLoader : MonoBehaviour
 
     private void LoadToEmotePlayer(int index = 0)
     {
+        log.text = $"path: {Application.streamingAssetsPath}\n count: {emoteAssets.Count}";
         emotePlayer.LoadData(emoteAssets[index]);
     }
 

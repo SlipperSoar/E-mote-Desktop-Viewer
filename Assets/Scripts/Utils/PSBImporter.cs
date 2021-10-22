@@ -16,6 +16,7 @@ public static class PSBImporter
     private static List<string> psbPathes;
     private static List<byte[]> emotes;
     public static List<byte[]> Emotes => emotes;
+    public static List<string> PsbPathes => psbPathes;
 
     static PSBImporter()
     {
@@ -38,7 +39,6 @@ public static class PSBImporter
         }
 
         FreeMount.Init();
-        var ctx = FreeMount.CreateContext();
         foreach (var path in psbPathes)
         {
             Debug.Log($"current PSB File Path: {path}");
@@ -49,36 +49,20 @@ public static class PSBImporter
                 var bodyValid = psbFile.TestBodyEncrypted();
                 Debug.Log($"header valid?: {headerValid}");
                 Debug.Log($"body valid?: {bodyValid}");
-                // var psb = PSB.DullahanLoad(path);
-                // PSB psb = new PSB(path);
-                // emotes.Add(psb.Build());
                 if (headerValid && bodyValid)
                 {
                     emotes.Add(File.ReadAllBytes(path));
                 }
                 else
                 {
-                    
+                    LoadEmoteBytes(path);
                 }
             }
             catch (System.Exception e1)
             {
                 try
                 {
-                    using var fs = File.OpenRead(path);
-                    string currentType = null;
-                    using var ms = ctx.OpenFromShell(fs, ref currentType);
-                    Debug.Log($"memory stream: {ms}");
-                    var psb = ms != null ? new PSB(ms) : new PSB(fs);
-                    if (psb.Platform == PsbSpec.krkr)
-                    {
-                        Debug.Log("Platform: Krkr");
-                        psb.SwitchSpec(PsbSpec.win, PsbSpec.win.DefaultPixelFormat());
-                    }
-                    psb.FixMotionMetadata();
-                    psb.Merge();
-                    emotes.Add(psb.Build());
-                    // emotes.Add(File.ReadAllBytes(path));
+                    LoadEmoteBytes(path);
                 }
                 catch (System.Exception e2)
                 {
@@ -87,6 +71,31 @@ public static class PSBImporter
                 }
             }
             
+        }
+    }
+
+    private static void LoadEmoteBytes(string path)
+    {
+        var ctx = FreeMount.CreateContext();
+        try
+        {
+            using var fs = File.OpenRead(path);
+            string currentType = null;
+            using var ms = ctx.OpenFromShell(fs, ref currentType);
+            Debug.Log($"memory stream: {ms}");
+            var psb = ms != null ? new PSB(ms) : new PSB(fs);
+            if (psb.Platform == PsbSpec.krkr)
+            {
+                Debug.Log("Platform: Krkr");
+                psb.SwitchSpec(PsbSpec.win, PsbSpec.win.DefaultPixelFormat());
+            }
+            psb.FixMotionMetadata();
+            psb.Merge();
+            emotes.Add(psb.Build());
+        }
+        catch (System.Exception e)
+        {
+            Debug.LogError($"error: {e.Message}");
         }
     }
 }
