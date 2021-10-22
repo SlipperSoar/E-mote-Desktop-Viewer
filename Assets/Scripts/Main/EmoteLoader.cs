@@ -12,6 +12,7 @@ public class EmoteLoader : MonoBehaviour
 
     void Start()
     {
+        log.text = $"{FreeMote.Plugins.FreeMount.CurrentPath}";
         emoteAssets = new List<EmoteAsset>();
         foreach (var psb in PSBImporter.Emotes)
         {

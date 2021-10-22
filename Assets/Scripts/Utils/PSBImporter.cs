@@ -32,6 +32,7 @@ public static class PSBImporter
         DirectoryInfo directoryInfo = new DirectoryInfo(dataPath);
         var files = directoryInfo.GetFiles();
         Debug.Log($"dataPath: {dataPath}, fileCount: {files.Length}");
+        Debug.Log($"dir parent: {directoryInfo.Parent.CreateSubdirectory("Plugins").FullName}");
         foreach (var file in files)
         {
             if (!file.Extension.Equals(".psb"))
@@ -42,8 +43,12 @@ public static class PSBImporter
             var path = $"{dataPath}/{file.Name}";
             emotes.Add(new PsbInfo() { name = file.Name, path = path });
         }
-
+#if UNITY_EDITOR
         FreeMount.Init();
+#elif UNITY_STANDALONE_WIN
+        FreeMount.Init(dllDirPath:$"{dataPath}/../Managed");
+        // FreeMount.Init(dllDirPath:$"{directoryInfo.Parent.CreateSubdirectory("Managed").FullName}");
+#endif
         foreach (var emote in emotes)
         {
             var path = emote.path;
