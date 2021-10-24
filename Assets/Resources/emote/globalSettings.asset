@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: globalSettings
   m_EditorClassIdentifier: 
   toggleAppearanceSettings: 1
-  maskMode: 0
+  maskMode: 1
   maskRegionClipping: 0
   alphaCutoff: 1
   gpuMeshDeformationEnabled: 0

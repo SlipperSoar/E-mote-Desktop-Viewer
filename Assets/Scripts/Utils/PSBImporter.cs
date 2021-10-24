@@ -21,6 +21,7 @@ public class PsbInfo
 
 public static class PSBImporter
 {
+    private static string dataPath;
     private static List<PsbInfo> emotes;
     public static List<PsbInfo> Emotes => emotes;
 
@@ -28,11 +29,10 @@ public static class PSBImporter
     {
         emotes = new List<PsbInfo>();
 
-        var dataPath = Application.streamingAssetsPath;
+        dataPath = Application.streamingAssetsPath;
         DirectoryInfo directoryInfo = new DirectoryInfo(dataPath);
         var files = directoryInfo.GetFiles();
         Debug.Log($"dataPath: {dataPath}, fileCount: {files.Length}");
-        Debug.Log($"dir parent: {directoryInfo.Parent.CreateSubdirectory("Plugins").FullName}");
         foreach (var file in files)
         {
             if (!file.Extension.Equals(".psb"))
@@ -43,12 +43,17 @@ public static class PSBImporter
             var path = $"{dataPath}/{file.Name}";
             emotes.Add(new PsbInfo() { name = file.Name, path = path });
         }
+
+        var dllDirPath = directoryInfo.Parent.CreateSubdirectory("Managed").FullName;
+        Debug.Log($"dir parent: {dllDirPath}");
 #if UNITY_EDITOR
         FreeMount.Init();
 #elif UNITY_STANDALONE_WIN
-        FreeMount.Init(dllDirPath:$"{dataPath}/../Managed");
-        // FreeMount.Init(dllDirPath:$"{directoryInfo.Parent.CreateSubdirectory("Managed").FullName}");
+        // FreeMount.Init($"{dataPath}/../Managed");
+        // FreeMount.Init(dllDirPath:$"{dataPath}/../Managed");
+        FreeMount.Init(dllDirPath, dllDirPath);
 #endif
+
         foreach (var emote in emotes)
         {
             var path = emote.path;

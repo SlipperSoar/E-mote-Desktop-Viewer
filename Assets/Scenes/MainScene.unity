@@ -734,7 +734,7 @@ MonoBehaviour:
   updateTiming: 1
   mMeshDivisionRatio: 1
   mainColor: {r: 1, g: 1, b: 1, a: 1}
-  mVertexColor: {r: 0.4716981, g: 0.4716981, b: 0.4716981, a: 1}
+  mVertexColor: {r: 0.5019608, g: 0.5019608, b: 0.5019608, a: 1}
   toggleTransform: 1
   mCoord: {x: 0, y: 0}
   mScale: 1
@@ -775,7 +775,7 @@ MonoBehaviour:
   _mapToRenderTexture: 0
   _renderTextureResolutionCorrection: 1
   _renderTextureClearColor: {r: 0, g: 0, b: 0, a: 0}
-  toggleRenderTexture: 0
+  toggleRenderTexture: 1
   _texWidth: 512
   _texHeight: 512
   _renderTextureMargin: 0.1
@@ -962,7 +962,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!114 &1339310280
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1146,7 +1146,7 @@ AudioSource:
   m_Enabled: 1
   serializedVersion: 4
   OutputAudioMixerGroup: {fileID: 0}
-  m_audioClip: {fileID: 8300000, guid: 9dd10f096068e914cbf2cde49d80fb3f, type: 3}
+  m_audioClip: {fileID: 0}
   m_PlayOnAwake: 1
   m_Volume: 1
   m_Pitch: 1
