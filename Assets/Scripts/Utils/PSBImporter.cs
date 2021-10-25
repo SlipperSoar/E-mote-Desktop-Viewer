@@ -4,11 +4,11 @@ using System.Linq;
 using System.IO;
 using FreeMote;
 using FreeMote.Psb;
-using FreeMote.Psb.Textures;
-using FreeMote.Psb.Types;
-using FreeMote.Plugins;
-using FreeMote.Plugins.Images;
-using FreeMote.Plugins.Audio;
+// using FreeMote.Psb.Textures;
+// using FreeMote.Psb.Types;
+// using FreeMote.Plugins;
+// using FreeMote.Plugins.Images;
+// using FreeMote.Plugins.Audio;
 using FreeMote.PsBuild;
 using UnityEngine;
 
@@ -43,15 +43,15 @@ public static class PSBImporter
             var path = $"{dataPath}/{file.Name}";
             emotes.Add(new PsbInfo() { name = file.Name, path = path });
         }
-
+        Debug.Log($"platform: <color=#ff0000>{Application.platform}</color>");
         var dllDirPath = directoryInfo.Parent.CreateSubdirectory("Managed").FullName;
         Debug.Log($"dir parent: {dllDirPath}");
 #if UNITY_EDITOR
-        FreeMount.Init();
+        // FreeMount.Init();
 #elif UNITY_STANDALONE_WIN
         // FreeMount.Init($"{dataPath}/../Managed");
         // FreeMount.Init(dllDirPath:$"{dataPath}/../Managed");
-        FreeMount.Init(dllDirPath, dllDirPath);
+        // FreeMount.Init(dllDirPath, dllDirPath);
 #endif
 
         foreach (var emote in emotes)
@@ -93,21 +93,25 @@ public static class PSBImporter
 
     private static void LoadEmoteBytes(PsbInfo psbInfo)
     {
-        var ctx = FreeMount.CreateContext();
+        // var ctx = FreeMount.CreateContext();
         try
         {
             using var fs = File.OpenRead(psbInfo.path);
-            string currentType = null;
-            using var ms = ctx.OpenFromShell(fs, ref currentType);
-            Debug.Log($"memory stream: {ms}");
-            var psb = ms != null ? new PSB(ms) : new PSB(fs);
+            // string currentType = null;
+            // using var ms = ctx.OpenFromShell(fs, ref currentType);
+            // Debug.Log($"memory stream: {ms}");
+            // var psb = ms != null ? new PSB(ms) : new PSB(fs);
+            var psb = new PSB(fs);
             if (psb.Platform == PsbSpec.krkr)
             {
                 Debug.Log("Platform: Krkr");
                 psb.SwitchSpec(PsbSpec.win, PsbSpec.win.DefaultPixelFormat());
+                Debug.Log("Switch Spec Over");
             }
             psb.FixMotionMetadata();
+            Debug.Log("Fix Motion Metadata Over");
             psb.Merge();
+            Debug.Log("Merge PSB Over");
             psbInfo.bytes = psb.Build();
         }
         catch (System.Exception e)
