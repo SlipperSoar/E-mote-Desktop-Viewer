@@ -1,0 +1,21 @@
+﻿<Window x:Class="FreeMote.Tools.Viewer.EmoteModelSetting"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:FreeMote.Tools.Viewer"
+        mc:Ignorable="d"
+        Title="EmoteModelSetting" Height="450" Width="800"
+        StateChanged="Window_StateChanged">
+    <Grid>
+        <Label Content="Psb File Path(s)：" HorizontalAlignment="Left" Margin="42,34,0,0" VerticalAlignment="Top" Height="26" Width="108"/>
+        <TextBox x:Name="FolderPathText" HorizontalAlignment="Left" Height="19" Margin="170,37,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="448"/>
+        <Button Content="选择文件夹" HorizontalAlignment="Left" Margin="628,37,0,0" VerticalAlignment="Top" Width="74" Click="FileFolderBtn_Click"/>
+        <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalAlignment="Left" Height="290" Margin="170,82,0,0" VerticalAlignment="Top" Width="448">
+            <StackPanel x:Name="PsbFilePanel" Height="268" Width="448">
+
+            </StackPanel>
+        </ScrollViewer>
+
+    </Grid>
+</Window>
