@@ -85,17 +85,20 @@ namespace FreeMote.Tools.Viewer
         {
             try
             {
-                var psbFile = new PsbFile(fullPath);
-                var headerValid = psbFile.TestHeaderEncrypted();
-                var bodyValid = psbFile.TestBodyEncrypted();
-                if (headerValid && bodyValid)
-                {
-                    Core.isSingle = true;
-                    Core.NeedRemoveTempFile = false;
-                    Core.PsbPath = fullPath;
-                    ShowModel();
-                }
-                else
+                // var psbFile = new PsbFile(fullPath);
+                // var headerValid = psbFile.TestHeaderEncrypted();
+                // var bodyValid = psbFile.TestBodyEncrypted();
+                // if (headerValid && bodyValid)
+                // {
+                //     var text = new TextBlock();
+                //     text.Text = "headerValid && bodyValid";
+                //     PsbFilePanel.Children.Add(text);
+                //     Core.isSingle = true;
+                //     Core.NeedRemoveTempFile = false;
+                //     Core.PsbPath = fullPath;
+                //     ShowModel();
+                // }
+                // else
                 {
                     App.LoadEmotePSB(fullPath);
                     var text = new TextBlock();
@@ -106,9 +109,7 @@ namespace FreeMote.Tools.Viewer
             }
             catch (Exception exception)
             {
-                var text = new TextBlock();
-                text.Text = $"{exception.Message}\n{exception.StackTrace}";
-                PsbFilePanel.Children.Add(text);
+                MessageBox.Show($"{exception.Message}\n{exception.StackTrace}");
             }
         }
 

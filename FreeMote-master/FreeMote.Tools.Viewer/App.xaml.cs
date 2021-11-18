@@ -205,6 +205,7 @@ Hint:
     {
         protected override void OnStartup(StartupEventArgs e)
         {
+            FreeMount.Init();
         }
 
         public static void LoadEmotePSB()
@@ -266,7 +267,6 @@ Hint:
             try
             {
                 //Consts.FastMode = false;
-                FreeMount.Init();
                 var ctx = FreeMount.CreateContext();
                 using var fs = File.OpenRead(path);
                 string currentType = null;
@@ -293,9 +293,9 @@ Hint:
 
                 GC.Collect(); //Can save memory from 700MB to 400MB
             }
-            catch (Exception)
+            catch (Exception e)
             {
-                //ignore
+                System.Windows.MessageBox.Show($"{e.Message}\n{e.StackTrace}");
             }
 
         }
