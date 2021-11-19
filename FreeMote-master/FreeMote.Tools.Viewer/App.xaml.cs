@@ -203,9 +203,12 @@ Hint:
     /// </summary>
     public partial class App : System.Windows.Application
     {
+        private static FreeMountContext ctx;
+
         protected override void OnStartup(StartupEventArgs e)
         {
             FreeMount.Init();
+            ctx = FreeMount.CreateContext();
         }
 
         public static void LoadEmotePSB()
@@ -220,7 +223,6 @@ Hint:
             try
             {
                 //Consts.FastMode = false;
-                var ctx = FreeMount.CreateContext();
                 for (int i = 0; i < Core.PsbPaths.Count; i++)
                 {
                     var oriPath = Core.PsbPaths[i];
@@ -266,7 +268,6 @@ Hint:
             try
             {
                 // Consts.FastMode = false;
-                var ctx = FreeMount.CreateContext();
                 using var fs = File.OpenRead(path);
                 string currentType = null;
                 using var ms = ctx.OpenFromShell(fs, ref currentType);
