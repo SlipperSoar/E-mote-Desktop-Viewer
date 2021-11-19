@@ -220,7 +220,6 @@ Hint:
             try
             {
                 //Consts.FastMode = false;
-                FreeMount.Init();
                 var ctx = FreeMount.CreateContext();
                 for (int i = 0; i < Core.PsbPaths.Count; i++)
                 {
@@ -266,7 +265,7 @@ Hint:
 
             try
             {
-                //Consts.FastMode = false;
+                // Consts.FastMode = false;
                 var ctx = FreeMount.CreateContext();
                 using var fs = File.OpenRead(path);
                 string currentType = null;
@@ -284,7 +283,6 @@ Hint:
                 }
 
                 psb.Merge();
-                //File.WriteAllText("output.json", PsbDecompiler.Decompile(psb));
                 var tempFile = Path.GetTempFileName();
                 File.WriteAllBytes(tempFile, psb.Build());
                 Core.PsbPath = tempFile;
