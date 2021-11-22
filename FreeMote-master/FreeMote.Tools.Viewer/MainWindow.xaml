@@ -5,7 +5,7 @@
         Width="960"
         Height="720"
         WindowStartupLocation="CenterScreen"
-        Background="{StaticResource NekoHacksScene}"
+        Background="{StaticResource NekoHacksScene}" ShowInTaskbar="False" Topmost="True" AllowsTransparency="True" WindowStyle="None"
         >
     <Grid>
         <Label Name="CenterMark" Content="+" HorizontalAlignment="Center" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" VerticalAlignment="Center" FontSize="24" Foreground="Gold" />
@@ -20,15 +20,6 @@
                 <ColumnDefinition Width="200"/>
             </Grid.ColumnDefinitions>
             <!--<TextBlock Margin="2,2,0,0" Foreground="Silver" Opacity="0.5" FontSize="11" Tag="You are not allowed to remove this line according to License (BY)">Powered by FreeMote</TextBlock>-->
-            <StackPanel Grid.Row="0" Grid.Column="1" HorizontalAlignment="Right" Orientation="Horizontal">
-                <Button Width="60" HorizontalAlignment="Right" Content="Motion" Margin="0,5,5,5" Background="Transparent" Foreground="Green" BorderThickness="3" BorderBrush="DarkGreen" Click="GetTimelines"></Button>
-                <Button Width="60" HorizontalAlignment="Right" Content="Stop" Margin="0,5,5,5" Background="Transparent" Foreground="Green" BorderThickness="3" BorderBrush="DarkGreen" Click="Stop"></Button>
-                <Button Width="60" HorizontalAlignment="Right" Content="Clear" Margin="0,5,5,5" Background="Transparent" Foreground="Green" BorderThickness="3" BorderBrush="DarkGreen" Click="Clear"></Button>
-            </StackPanel>
-            <ScrollViewer VerticalScrollBarVisibility="Auto" Grid.Column="1"  Grid.Row="1" >
-                <StackPanel Name="MotionPanel" HorizontalAlignment="Right" Orientation="Vertical">
-                </StackPanel>
-            </ScrollViewer>
         </Grid>
     </Grid>
 

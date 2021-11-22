@@ -10,6 +10,9 @@ using System.Windows.Data;
 using System.Windows.Documents;
 using System.Windows.Input;
 using System.ComponentModel;
+using FreeMote.Plugins;
+using FreeMote.Psb;
+using FreeMote.PsBuild;
 
 namespace FreeMote.Tools.Viewer
 {
@@ -18,13 +21,15 @@ namespace FreeMote.Tools.Viewer
     /// </summary>
     public partial class EmoteModelSetting : Window
     {
-        private System.Windows.Forms.FolderBrowserDialog dialog;
         private string folderPath;
         private Action runMainWindow;
+        private static FreeMountContext ctx;
 
         public EmoteModelSetting()
         {
             InitializeComponent();
+            FreeMount.Init();
+            ctx = FreeMount.CreateContext();
         }
 
         #region Public Method
@@ -44,7 +49,7 @@ namespace FreeMote.Tools.Viewer
 
         private void FileFolderBtn_Click(object sender, RoutedEventArgs e)
         {
-            dialog = new System.Windows.Forms.FolderBrowserDialog();
+            var dialog = new System.Windows.Forms.FolderBrowserDialog();
             var result = dialog.ShowDialog();
 
             if (result == System.Windows.Forms.DialogResult.Cancel)
@@ -71,7 +76,6 @@ namespace FreeMote.Tools.Viewer
                     continue;
                 }
                 var fullPath = path.FullName;
-                Core.PsbPaths.Add(fullPath);
                 var button = new Button();
                 button.Content = path.Name;
                 button.Click += (sender, e) => {
@@ -85,31 +89,12 @@ namespace FreeMote.Tools.Viewer
         {
             try
             {
-                // var psbFile = new PsbFile(fullPath);
-                // var headerValid = psbFile.TestHeaderEncrypted();
-                // var bodyValid = psbFile.TestBodyEncrypted();
-                // if (headerValid && bodyValid)
-                // {
-                //     var text = new TextBlock();
-                //     text.Text = "headerValid && bodyValid";
-                //     PsbFilePanel.Children.Add(text);
-                //     Core.isSingle = true;
-                //     Core.NeedRemoveTempFile = false;
-                //     Core.PsbPath = fullPath;
-                //     ShowModel();
-                // }
-                // else
-                {
-                    App.LoadEmotePSB(fullPath);
-                    var text = new TextBlock();
-                    text.Text = $"path: {Core.PsbPath}";
-                    PsbFilePanel.Children.Add(text);
-                    ShowModel();
-                }
+                LoadEmotePSB(fullPath);
+                ShowModel();
             }
             catch (Exception exception)
             {
-                MessageBox.Show($"{exception.Message}\n{exception.StackTrace}");
+                MessageBox.Show($"{exception.Message}\n{exception.StackTrace}\n line: 97");
             }
         }
 
@@ -133,6 +118,41 @@ namespace FreeMote.Tools.Viewer
         {
             this.Visibility = Visibility.Hidden;
             runMainWindow?.Invoke();
+        }
+
+        public static void LoadEmotePSB(string path)
+        {
+            if (!File.Exists(path))
+            {
+                return;
+            }
+
+            try
+            {
+                using var fs = File.OpenRead(path);
+                string currentType = null;
+                using var ms = ctx.OpenFromShell(fs, ref currentType);
+                var psb = ms != null ? new PSB(ms) : new PSB(fs);
+
+                if (psb.Platform == PsbSpec.krkr)
+                {
+                    psb.SwitchSpec(PsbSpec.win, PsbSpec.win.DefaultPixelFormat());
+                }
+
+                psb.FixMotionMetadata();
+
+                psb.Merge();
+                var tempFile = Path.GetTempFileName();
+                File.WriteAllBytes(tempFile, psb.Build());
+                Core.PsbPath = tempFile;
+                Core.NeedRemoveTempFile = true;
+
+                GC.Collect(); //Can save memory from 700MB to 400MB
+            }
+            catch (Exception e)
+            {
+                MessageBox.Show($"{e.Message}\n{e.StackTrace}\n line: 154");
+            }
         }
     }
 }

@@ -28,14 +28,18 @@ namespace FreeMote.Tools.Viewer
         UNKNOWN_ERROR = 0xFFFFFFFF
     }
 
+    struct TimelineData
+    {
+        public string name;
+        public TimelinePlayFlags flag;
+    }
+
     public partial class MainWindow : Window
     {
         const float RefreshRate = 1000.0f / 65.0f; // 1/n秒カウントをmsへ変換。
         private const int Movement = 10;
 
         private static double _lastX, _lastY;
-        private static bool _leftMouseDown;
-        private static bool _rightMouseDown = false;
         private static double _midX, _midY;
         private bool _mouseTrack = false;
         private D3DImage _di;
@@ -43,7 +47,6 @@ namespace FreeMote.Tools.Viewer
         private WindowInteropHelper _helper;
         private EmotePlayer _player;
         private IntPtr _scene;
-        private List<string> _psbPaths;
         private string _psbPath;
         private PreciseTimer _timer;
 
@@ -51,10 +54,12 @@ namespace FreeMote.Tools.Viewer
         private double _elapsedTime;
         private bool _measureMode = false;
 
+        private List<TimelineData> timelineDatas;
+
         public MainWindow()
         {
-            _psbPaths = Core.PsbPaths;
             _psbPath = Core.PsbPath;
+            timelineDatas = new List<TimelineData>();
 
             _helper = new WindowInteropHelper(this);
 
@@ -64,6 +69,7 @@ namespace FreeMote.Tools.Viewer
             _di.IsFrontBufferAvailableChanged
                 += OnIsFrontBufferAvailableChanged;
 
+            MouseRightButtonUp += MainWindow_MouseRightButtonUp;
             MouseMove += MainWindow_MouseMove;
             MouseWheel += MainWindow_MouseWheel;
             MouseDoubleClick += MainWindow_MouseDoubleClick;
@@ -85,7 +91,7 @@ namespace FreeMote.Tools.Viewer
             InitializeComponent();
             Width = Core.Width;
             Height = Core.Height;
-            //Topmost = true;
+
             _midX = Width / 2;
             _midY = Height / 2;
             CenterMark.Visibility = Visibility.Hidden;
@@ -94,44 +100,29 @@ namespace FreeMote.Tools.Viewer
             _emote = new Emote(_helper.EnsureHandle(), (int)Width, (int)Height, true);
             _emote.EmoteInit();
 
-            if (Core.isSingle)
-            {
-                _player = _emote.CreatePlayer("Chara1", _psbPath);
-            }
-            else if (_psbPaths.Count > 1)
-            {
-                _player = _emote.CreatePlayer("CombinedChara1", _psbPaths.ToArray());
-            }
-            else
-            {
-                _player = _emote.CreatePlayer("Chara1", _psbPaths.FirstOrDefault());
-            }
+            _player = _emote.CreatePlayer("Chara1", _psbPath);
 
             _player.SetScale(1, 0, 0);
             _player.SetCoord(0, 0);
             _player.SetVariable("fade_z", 256);
             _player.SetSmoothing(true);
             _player.Show();
-            
+
+            InitTimelines();
+
             if (Core.NeedRemoveTempFile)
             {
-                if (Core.isSingle)
-                {
-                    File.Delete(_psbPath);
-                }
-                else
-                {
-                    foreach (var psbPath in _psbPaths)
-                    {
-                        File.Delete(psbPath);
-                    }
-                }
-                
+                File.Delete(_psbPath);
                 Core.NeedRemoveTempFile = false;
             }
 
             // begin rendering the custom D3D scene into the D3DImage
             BeginRenderingScene();
+        }
+
+        private void MainWindow_MouseRightButtonUp(object sender, MouseButtonEventArgs e)
+        {
+            PlayTimeline(new Random().Next(0, timelineDatas.Count));
         }
 
         private void LoadModel()
@@ -169,26 +160,26 @@ namespace FreeMote.Tools.Viewer
                 _player.OffsetCoord(-Movement, 0);
             }
 
-            if (keyEventArgs.Key == Key.LeftCtrl)
-            {
-                if (keyEventArgs.IsDown)
-                {
-                    _measureMode = !_measureMode;
-                }
-
-                if (_measureMode)
-                {
-                    _player.SetScale(1);
-                    _player.SetCoord(0, 0);
-                    CenterMark.Visibility = Visibility.Visible;
-                    CharaCenterMark.Visibility = Visibility.Visible;
-                }
-                else
-                {
-                    CenterMark.Visibility = Visibility.Hidden;
-                    CharaCenterMark.Visibility = Visibility.Hidden;
-                }
-            }
+            // if (keyEventArgs.Key == Key.LeftCtrl)
+            // {
+            //     if (keyEventArgs.IsDown)
+            //     {
+            //         _measureMode = !_measureMode;
+            //     }
+            // 
+            //     if (_measureMode)
+            //     {
+            //         _player.SetScale(1);
+            //         _player.SetCoord(0, 0);
+            //         CenterMark.Visibility = Visibility.Visible;
+            //         CharaCenterMark.Visibility = Visibility.Visible;
+            //     }
+            //     else
+            //     {
+            //         CenterMark.Visibility = Visibility.Hidden;
+            //         CharaCenterMark.Visibility = Visibility.Hidden;
+            //     }
+            // }
 
             await Task.Delay(20);
             UpdatePosition();
@@ -208,12 +199,13 @@ namespace FreeMote.Tools.Viewer
 
         void MainWindow_MouseMove(object sender, MouseEventArgs e)
         {
-            if (e.LeftButton == MouseButtonState.Pressed && e.GetPosition(MotionPanel).X < 0)
+            if (e.LeftButton == MouseButtonState.Pressed)
             {
-                var ex = e.GetPosition(this);
-                _player.OffsetCoord((int) (ex.X - _lastX), (int) (ex.Y - _lastY));
-                _lastX = ex.X;
-                _lastY = ex.Y;
+                // var ex = e.GetPosition(this);
+                // _player.OffsetCoord((int) (ex.X - _lastX), (int) (ex.Y - _lastY));
+                // _lastX = ex.X;
+                // _lastY = ex.Y;
+                DragMove();
             }
             else
             {
@@ -405,70 +397,37 @@ namespace FreeMote.Tools.Viewer
             base.OnDrop(e);
         }
 
-        private void GetTimelines(object sender, RoutedEventArgs e)
+        private void InitTimelines()
         {
-            if (MotionPanel.Children.Count > 0)
-            {
-                if (MotionPanel.Visibility == Visibility.Visible)
-                {
-                    MotionPanel.Visibility = Visibility.Collapsed;
-                }
-                else
-                {
-                    MotionPanel.Visibility = Visibility.Visible;
-                }
-
-                return;
-            }
-
             var count = _player.CountMainTimelines();
             for (uint i = 0; i < count; i++)
             {
-                //Debug.WriteLine(_player.GetDiffTimelineLabelAt(i));
-                Button btn = new Button
+                timelineDatas.Add(new TimelineData()
                 {
-                    //Name = _player.GetDiffTimelineLabelAt(i),
-                    Content = _player.GetMainTimelineLabelAt(i),
-                    Width = 180,
-                    Tag = "main",
-                    Margin = new Thickness(0, 0, 5, 5),
-                    Background = Brushes.Transparent,
-                    Foreground = Brushes.DarkOrange,
-                };
-                btn.Click += PlayTimeline;
-                MotionPanel.Children.Add(btn);
-            }
-
-            if (count > 0)
-            {
-                MotionPanel.Children.Add(new Separator());
+                    name = _player.GetMainTimelineLabelAt(i),
+                    flag = TimelinePlayFlags.NONE
+                });
             }
 
             count = _player.CountDiffTimelines();
             for (uint i = 0; i < count; i++)
             {
-                //Debug.WriteLine(_player.GetDiffTimelineLabelAt(i));
-                Button btn = new Button
+                timelineDatas.Add(new TimelineData()
                 {
-                    //Name = _player.GetDiffTimelineLabelAt(i),
-                    Content = _player.GetDiffTimelineLabelAt(i),
-                    Width = 180,
-                    Tag = "diff",
-                    Margin = new Thickness(0, 0, 5, 5),
-                    Background = Brushes.Transparent,
-                    Foreground = Brushes.DarkOrange,
-                };
-                btn.Click += PlayTimeline;
-                MotionPanel.Children.Add(btn);
+                    name = _player.GetDiffTimelineLabelAt(i),
+                    flag = TimelinePlayFlags.TIMELINE_PLAY_DIFFERENCE
+                });
             }
         }
 
-        private void PlayTimeline(object sender, RoutedEventArgs e)
+        private void PlayTimeline(int index)
         {
-            _player.PlayTimeline(((Button) sender).Content.ToString(),
-                ((Button) sender).Tag.ToString() == "diff"
-                    ? TimelinePlayFlags.TIMELINE_PLAY_DIFFERENCE
-                    : TimelinePlayFlags.NONE);
+            if (timelineDatas.Count <= index)
+            {
+                return;
+            }
+            var timeline = timelineDatas[index];
+            _player.PlayTimeline(timeline.name, timeline.flag);
         }
 
         private void Stop(object sender, RoutedEventArgs e)

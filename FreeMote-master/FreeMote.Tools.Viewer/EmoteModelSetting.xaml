@@ -6,7 +6,7 @@
         xmlns:local="clr-namespace:FreeMote.Tools.Viewer"
         mc:Ignorable="d"
         Title="EmoteModelSetting" Height="450" Width="800"
-        StateChanged="Window_StateChanged">
+        StateChanged="Window_StateChanged" Icon="fure-zu.ico">
     <Grid>
         <Label Content="Psb File Path(s)：" HorizontalAlignment="Left" Margin="42,34,0,0" VerticalAlignment="Top" Height="26" Width="108"/>
         <TextBox x:Name="FolderPathText" HorizontalAlignment="Left" Height="19" Margin="170,37,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="448"/>

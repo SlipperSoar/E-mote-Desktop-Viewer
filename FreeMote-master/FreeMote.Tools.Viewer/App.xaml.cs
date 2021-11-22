@@ -6,9 +6,6 @@ using System.Linq;
 using System.Runtime.InteropServices;
 using System.Windows;
 using System.Drawing;
-using FreeMote.Plugins;
-using FreeMote.Psb;
-using FreeMote.PsBuild;
 using System.Windows.Forms;
 using System.ComponentModel;
 
@@ -16,12 +13,10 @@ namespace FreeMote.Tools.Viewer
 {
     public static class Core
     {
-        public static uint Width { get; set; } = 960;
+        public static uint Width { get; set; } = 480;
         public static uint Height { get; set; } = 720;
         public static bool DirectLoad { get; set; } = false;
-        public static List<string> PsbPaths { get; set; } = new List<string>();
         public static string PsbPath { get; set; }
-        public static bool isSingle { get; set; } = false;
         internal static bool NeedRemoveTempFile { get; set; } = false;
     }
 
@@ -149,7 +144,7 @@ namespace FreeMote.Tools.Viewer
             settingWindow.AddMainWindowRunAction(() =>
             {
                 MainWindow mainWindow = new MainWindow();
-                app.Run(mainWindow);
+                mainWindow.Show();
             });
             app.Run(settingWindow);
         }
@@ -163,7 +158,7 @@ namespace FreeMote.Tools.Viewer
             notifyIcon.Visible = true;
             notifyIcon.ContextMenu = new ContextMenu(new MenuItem[]
             {
-                new MenuItem("Powered By FreeMote"),
+                new MenuItem("Powered By FreeMote", OnPoweredTagClick),
                 new MenuItem("设置", OnSettingMenu),
                 new MenuItem("退出", OnExit)
             });
@@ -176,6 +171,11 @@ namespace FreeMote.Tools.Viewer
             OnSettingMenu(sender, e);
         }
 
+        private static void OnPoweredTagClick(object sender, EventArgs e)
+        {
+            System.Diagnostics.Process.Start("https://github.com/UlyssesWu/FreeMote");
+        }
+
         private static void OnSettingMenu(object sender, EventArgs e)
         {
             settingWindow.Visibility = Visibility.Visible;
@@ -185,17 +185,6 @@ namespace FreeMote.Tools.Viewer
         {
             app.Shutdown();
         }
-
-        private static string PrintHelp()
-        {
-            return @"Examples: 
-  FreeMoteViewer -w 1920 -h 1080 -d sample.psb
-  FreeMoteViewer -nf sample_head.psb sample_body.psb
-Hint:
-  You can load multiple partial exported PSB like the 2nd example. 
-  The specified order is VERY important, always try to put the Main part at last (body is the Main part comparing to head)!
-  If you're picking multiple files from file explorer and drag&drop to FreeMoteViewer, drag the non-Main part.";
-        }
     }
 
     /// <summary>
@@ -203,99 +192,9 @@ Hint:
     /// </summary>
     public partial class App : System.Windows.Application
     {
-        private static FreeMountContext ctx;
 
         protected override void OnStartup(StartupEventArgs e)
         {
-            FreeMount.Init();
-            ctx = FreeMount.CreateContext();
-        }
-
-        public static void LoadEmotePSB()
-        {
-            Core.PsbPaths.RemoveAll(f => !File.Exists(f));
-
-            if (Core.PsbPaths.Count == 0)
-            {
-                return;
-            }
-
-            try
-            {
-                //Consts.FastMode = false;
-                for (int i = 0; i < Core.PsbPaths.Count; i++)
-                {
-                    var oriPath = Core.PsbPaths[i];
-                    using var fs = File.OpenRead(oriPath);
-                    string currentType = null;
-                    using var ms = ctx.OpenFromShell(fs, ref currentType);
-                    var psb = ms != null ? new PSB(ms) : new PSB(fs);
-
-                    if (psb.Platform == PsbSpec.krkr)
-                    {
-                        psb.SwitchSpec(PsbSpec.win, PsbSpec.win.DefaultPixelFormat());
-                    }
-
-                    // if (!optFixMetadata.HasValue())
-                    {
-                        psb.FixMotionMetadata();
-                    }
-
-                    psb.Merge();
-                    //File.WriteAllText("output.json", PsbDecompiler.Decompile(psb));
-                    var tempFile = Path.GetTempFileName();
-                    File.WriteAllBytes(tempFile, psb.Build());
-                    Core.PsbPaths[i] = tempFile;
-                    Core.NeedRemoveTempFile = true;
-                }
-                Core.isSingle = false;
-
-                GC.Collect(); //Can save memory from 700MB to 400MB
-            }
-            catch (Exception)
-            {
-                //ignore
-            }
-        }
-
-        public static void LoadEmotePSB(string path)
-        {
-            if (!File.Exists(path))
-            {
-                return;
-            }
-
-            try
-            {
-                // Consts.FastMode = false;
-                using var fs = File.OpenRead(path);
-                string currentType = null;
-                using var ms = ctx.OpenFromShell(fs, ref currentType);
-                var psb = ms != null ? new PSB(ms) : new PSB(fs);
-
-                if (psb.Platform == PsbSpec.krkr)
-                {
-                    psb.SwitchSpec(PsbSpec.win, PsbSpec.win.DefaultPixelFormat());
-                }
-
-                // if (!optFixMetadata.HasValue())
-                {
-                    psb.FixMotionMetadata();
-                }
-
-                psb.Merge();
-                var tempFile = Path.GetTempFileName();
-                File.WriteAllBytes(tempFile, psb.Build());
-                Core.PsbPath = tempFile;
-                Core.NeedRemoveTempFile = true;
-                Core.isSingle = true;
-
-                GC.Collect(); //Can save memory from 700MB to 400MB
-            }
-            catch (Exception e)
-            {
-                System.Windows.MessageBox.Show($"{e.Message}\n{e.StackTrace}");
-            }
 
         }
     }
