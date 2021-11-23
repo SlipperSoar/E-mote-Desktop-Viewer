@@ -145,6 +145,7 @@ namespace FreeMote.Tools.Viewer
             {
                 MainWindow mainWindow = new MainWindow();
                 mainWindow.Show();
+                return mainWindow;
             });
             app.Run(settingWindow);
         }

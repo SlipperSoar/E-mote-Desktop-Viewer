@@ -22,7 +22,7 @@ namespace FreeMote.Tools.Viewer
     public partial class EmoteModelSetting : Window
     {
         private string folderPath;
-        private Action runMainWindow;
+        private Func<MainWindow> runMainWindow;
         private static FreeMountContext ctx;
 
         public EmoteModelSetting()
@@ -34,7 +34,7 @@ namespace FreeMote.Tools.Viewer
 
         #region Public Method
 
-        public void AddMainWindowRunAction(Action action)
+        public void AddMainWindowRunAction(Func<MainWindow> action)
         {
             runMainWindow += action;
         }
@@ -76,25 +76,49 @@ namespace FreeMote.Tools.Viewer
                     continue;
                 }
                 var fullPath = path.FullName;
-                var button = new Button();
-                button.Content = path.Name;
-                button.Click += (sender, e) => {
-                    LoadBtn_Click(sender, e, fullPath);
+                var panel = new StackPanel()
+                {
+                    Orientation = Orientation.Horizontal,
+                    Height = 25,
                 };
-                PsbFilePanel.Children.Add(button);
+                
+                var button = new Button()
+                {
+                    Content = path.Name,
+                };
+                panel.Children.Add(button);
+                button.Click += (sender, e) => {
+                    var window = LoadBtn_Click(sender, e, fullPath);
+                    if (window != null)
+                    {
+                        var btn = new Button()
+                        {
+                            Content = "Close This Window"
+                        };
+                        panel.Children.Add(btn);
+                        btn.Click += (sender, e) =>
+                        {
+                            window.Close();
+                            panel.Children.Remove(btn);
+                        };
+                    }
+                };
+                PsbFilePanel.Children.Add(panel);
             }
         }
 
-        private void LoadBtn_Click(object sender, RoutedEventArgs e, string fullPath)
+        private MainWindow LoadBtn_Click(object sender, RoutedEventArgs e, string fullPath)
         {
             try
             {
                 LoadEmotePSB(fullPath);
-                ShowModel();
+                Visibility = Visibility.Hidden;
+                return runMainWindow?.Invoke();
             }
             catch (Exception exception)
             {
                 MessageBox.Show($"{exception.Message}\n{exception.StackTrace}\n line: 97");
+                return null;
             }
         }
 
@@ -112,12 +136,6 @@ namespace FreeMote.Tools.Viewer
                 default:
                     break;
             }
-        }
-
-        private void ShowModel()
-        {
-            this.Visibility = Visibility.Hidden;
-            runMainWindow?.Invoke();
         }
 
         public static void LoadEmotePSB(string path)
