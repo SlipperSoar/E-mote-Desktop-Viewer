@@ -20,13 +20,14 @@ namespace FreeMote.Tools.Viewer
         {
             get
             {
-                if (IsSubKeyExist(ApplicationTopKey))
+                var key = GetSubKey(ApplicationTopKey);
+                if (key != null)
                 {
-                    return Registry.CurrentUser.OpenSubKey($"{parentKey}//{ApplicationTopKey}");
+                    return key;
                 }
                 else
                 {
-                    return Registry.CurrentUser.CreateSubKey($"{parentKey}//{ApplicationTopKey}");
+                    return Registry.CurrentUser.CreateSubKey($"{parentKey}\\{ApplicationTopKey}", true);
                 }
             }
         }
@@ -56,18 +57,18 @@ namespace FreeMote.Tools.Viewer
 
         #region Private Method
 
-        private static bool IsSubKeyExist(string subKey)
+        private static RegistryKey GetSubKey(string subKey)
         {
             var names = Registry.CurrentUser.OpenSubKey(parentKey).GetSubKeyNames();
             foreach (var name in names)
             {
                 if (subKey.Equals(name))
                 {
-                    return true;
+                    return Registry.CurrentUser.OpenSubKey($"{parentKey}\\{subKey}", true);
                 }
             }
 
-            return false;
+            return null;
         }
 
         #endregion

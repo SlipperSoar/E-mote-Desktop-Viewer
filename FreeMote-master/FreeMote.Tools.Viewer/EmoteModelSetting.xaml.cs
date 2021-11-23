@@ -22,6 +22,7 @@ namespace FreeMote.Tools.Viewer
     public partial class EmoteModelSetting : Window
     {
         private const string PathKey = "Path";
+        private const string LastEmoteFilePathKey = "LastEmotePath";
 
         private string folderPath;
         private Func<MainWindow> runMainWindow;
@@ -38,6 +39,11 @@ namespace FreeMote.Tools.Viewer
             {
                 FolderPathText.Text = folderPath = path;
                 LoadPsbPaths();
+                // var filePath = UserRegistryKey.GetString(LastEmoteFilePathKey);
+                // if (!string.IsNullOrEmpty(filePath))
+                // {
+                //     LoadBtn_Click(this, null, filePath);
+                // }
             }
         }
 
@@ -99,6 +105,7 @@ namespace FreeMote.Tools.Viewer
                 panel.Children.Add(button);
                 button.Click += (sender, e) => {
                     var window = LoadBtn_Click(sender, e, fullPath);
+                    // UserRegistryKey.SetString(LastEmoteFilePathKey, fullPath);
                     if (window != null)
                     {
                         var btn = new Button()
