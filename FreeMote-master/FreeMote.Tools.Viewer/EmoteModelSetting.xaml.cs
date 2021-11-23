@@ -21,6 +21,8 @@ namespace FreeMote.Tools.Viewer
     /// </summary>
     public partial class EmoteModelSetting : Window
     {
+        private const string PathKey = "Path";
+
         private string folderPath;
         private Func<MainWindow> runMainWindow;
         private static FreeMountContext ctx;
@@ -30,6 +32,13 @@ namespace FreeMote.Tools.Viewer
             InitializeComponent();
             FreeMount.Init();
             ctx = FreeMount.CreateContext();
+
+            var path = UserRegistryKey.GetString(PathKey);
+            if (!string.IsNullOrEmpty(path))
+            {
+                FolderPathText.Text = folderPath = path;
+                LoadPsbPaths();
+            }
         }
 
         #region Public Method
@@ -58,6 +67,7 @@ namespace FreeMote.Tools.Viewer
             }
 
             FolderPathText.Text = folderPath = dialog.SelectedPath;
+            UserRegistryKey.SetString(PathKey, folderPath);
             LoadPsbPaths();
         }
 
