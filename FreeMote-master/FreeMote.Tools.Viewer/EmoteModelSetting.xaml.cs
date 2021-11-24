@@ -22,7 +22,7 @@ namespace FreeMote.Tools.Viewer
     public partial class EmoteModelSetting : Window
     {
         private const string PathKey = "Path";
-        private const string LastEmoteFilePathKey = "LastEmotePath";
+        private const string LastEmoteSelectionKey = "LastEmoteIndex";
 
         private string folderPath;
         private Func<MainWindow> runMainWindow;
@@ -39,11 +39,12 @@ namespace FreeMote.Tools.Viewer
             {
                 FolderPathText.Text = folderPath = path;
                 LoadPsbPaths();
-                // var filePath = UserRegistryKey.GetString(LastEmoteFilePathKey);
-                // if (!string.IsNullOrEmpty(filePath))
-                // {
-                //     LoadBtn_Click(this, null, filePath);
-                // }
+                var fileIndex = UserRegistryKey.GetInt(LastEmoteSelectionKey);
+                if (fileIndex >= 0)
+                {
+                    var ui = (PsbFilePanel.Children[fileIndex] as StackPanel).Children[0];
+                    // ui.RaiseEvent(new RoutedEventArgs(Button.ClickEvent));
+                }
             }
         }
 
@@ -103,9 +104,10 @@ namespace FreeMote.Tools.Viewer
                     Content = path.Name,
                 };
                 panel.Children.Add(button);
+                var fileIndex = PsbFilePanel.Children.Add(panel);
                 button.Click += (sender, e) => {
                     var window = LoadBtn_Click(sender, e, fullPath);
-                    // UserRegistryKey.SetString(LastEmoteFilePathKey, fullPath);
+                    UserRegistryKey.SetInt(LastEmoteSelectionKey, fileIndex);
                     if (window != null)
                     {
                         var btn = new Button()
@@ -120,7 +122,6 @@ namespace FreeMote.Tools.Viewer
                         };
                     }
                 };
-                PsbFilePanel.Children.Add(panel);
             }
         }
 

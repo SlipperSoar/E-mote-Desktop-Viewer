@@ -16,41 +16,65 @@ namespace FreeMote.Tools.Viewer
 
         private const string parentKey = "software";
         private const string ApplicationTopKey = "EmoteViewer";
-        private static RegistryKey TopKey
-        {
-            get
-            {
-                var key = GetSubKey(ApplicationTopKey);
-                if (key != null)
-                {
-                    return key;
-                }
-                else
-                {
-                    return Registry.CurrentUser.CreateSubKey($"{parentKey}\\{ApplicationTopKey}", true);
-                }
-            }
-        }
+
+        private static RegistryKey TopKey;
 
         #endregion
 
         static UserRegistryKey()
         {
-
+            // var key = GetSubKey(ApplicationTopKey);
+            // TopKey = key ?? Registry.CurrentUser.CreateSubKey($"{parentKey}\\{ApplicationTopKey}", true);
+            TopKey = Registry.CurrentUser.CreateSubKey($"{parentKey}\\{ApplicationTopKey}", true);
         }
 
         #region Public Method
 
-        public static void SetString(string key, string value)
+        public static void SetValue(string key, object value)
         {
             TopKey.SetValue(key, value);
-            TopKey.Close();
+        }
+
+        public static object GetValue(string key)
+        {
+            return TopKey.GetValue(key);
+        }
+
+        public static void SetDefaultValue(object value)
+        {
+            SetValue("", value);
+        }
+
+        public static object GetDefaultValue()
+        {
+            return GetValue("");
+        }
+
+        public static void SetString(string key, string value)
+        {
+            SetValue(key, value);
         }
 
         public static string GetString(string key)
         {
-            var value = TopKey.GetValue(key);
+            var value = GetValue(key);
             return value == null ? "" : value.ToString();
+        }
+
+        public static void SetInt(string key, int value)
+        {
+            SetValue(key, value);
+        }
+
+        public static int GetInt(string key)
+        {
+            var value = GetValue(key);
+            return value == null ? -1 : (int) value;
+        }
+
+        public static void OnApplicationExit()
+        {
+            TopKey.Close();
         }
 
         #endregion
@@ -59,11 +83,13 @@ namespace FreeMote.Tools.Viewer
 
         private static RegistryKey GetSubKey(string subKey)
         {
-            var names = Registry.CurrentUser.OpenSubKey(parentKey).GetSubKeyNames();
+            var key = Registry.CurrentUser.OpenSubKey(parentKey);
+            var names = key.GetSubKeyNames();
             foreach (var name in names)
             {
                 if (subKey.Equals(name))
                 {
+                    key.Close();
                     return Registry.CurrentUser.OpenSubKey($"{parentKey}\\{subKey}", true);
                 }
             }

@@ -36,6 +36,7 @@ namespace FreeMote.Tools.Viewer
 
     public partial class MainWindow : Window
     {
+        const string LastScaleKey = "LastEmoteScale";
         const float RefreshRate = 1000.0f / 65.0f; // 1/n秒カウントをmsへ変換。
         private const int Movement = 10;
 
@@ -102,7 +103,13 @@ namespace FreeMote.Tools.Viewer
 
             _player = _emote.CreatePlayer("Chara1", _psbPath);
 
+            var offsetScaleStr = UserRegistryKey.GetString(LastScaleKey);
             _player.SetScale(1, 0, 0);
+            if (!string.IsNullOrEmpty(offsetScaleStr))
+            {
+                var offsetScale = float.Parse(offsetScaleStr);
+                _player.SetScale(offsetScale);
+            }
             _player.SetCoord(0, 0);
             _player.SetVariable("fade_z", 256);
             _player.SetSmoothing(true);
@@ -194,6 +201,7 @@ namespace FreeMote.Tools.Viewer
             else
             {
                 _player.OffsetScale(1 + ConvertDelta(e.Delta));
+                UserRegistryKey.SetString(LastScaleKey, _player.GetScale().ToString());
             }
         }
 

@@ -184,6 +184,7 @@ namespace FreeMote.Tools.Viewer
 
         private static void OnExit(object sender, EventArgs e)
         {
+            UserRegistryKey.OnApplicationExit();
             app.Shutdown();
         }
     }
