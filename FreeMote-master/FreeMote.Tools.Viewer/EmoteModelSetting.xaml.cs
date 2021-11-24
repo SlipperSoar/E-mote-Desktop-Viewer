@@ -34,17 +34,17 @@ namespace FreeMote.Tools.Viewer
             FreeMount.Init();
             ctx = FreeMount.CreateContext();
 
+            GuideText.Text = "- 选择Emote模型所在文件夹\n" +
+                "- 选择其中想要显示的模型\n" +
+                "- 左键拖动显示窗口\n" +
+                "- 滚轮缩放显示大小\n" +
+                "- 右键播放随机动画";
+
             var path = UserRegistryKey.GetString(PathKey);
             if (!string.IsNullOrEmpty(path))
             {
                 FolderPathText.Text = folderPath = path;
                 LoadPsbPaths();
-                var fileIndex = UserRegistryKey.GetInt(LastEmoteSelectionKey);
-                if (fileIndex >= 0)
-                {
-                    var ui = (PsbFilePanel.Children[fileIndex] as StackPanel).Children[0];
-                    // ui.RaiseEvent(new RoutedEventArgs(Button.ClickEvent));
-                }
             }
         }
 
@@ -53,6 +53,18 @@ namespace FreeMote.Tools.Viewer
         public void AddMainWindowRunAction(Func<MainWindow> action)
         {
             runMainWindow += action;
+        }
+
+        public void Init()
+        {
+            // 如果有保存上次选择的模型，直接显示上次的模型
+            var fileIndex = UserRegistryKey.GetInt(LastEmoteSelectionKey);
+            if (fileIndex >= 0 && fileIndex < PsbFilePanel.Children.Count)
+            {
+                var ui = (PsbFilePanel.Children[fileIndex] as StackPanel).Children[0];
+                MessageBox.Show($"ui is null? : {ui is null}");
+                ui.RaiseEvent(new RoutedEventArgs(Button.ClickEvent));
+            }
         }
 
         #endregion
