@@ -46,6 +46,8 @@ namespace FreeMote.Tools.Viewer
                 FolderPathText.Text = folderPath = path;
                 LoadPsbPaths();
             }
+
+            Loaded += (sender, e) => Init();
         }
 
         #region Public Method
@@ -55,19 +57,18 @@ namespace FreeMote.Tools.Viewer
             runMainWindow += action;
         }
 
-        public void Init()
+        #endregion
+
+        private void Init()
         {
             // 如果有保存上次选择的模型，直接显示上次的模型
             var fileIndex = UserRegistryKey.GetInt(LastEmoteSelectionKey);
             if (fileIndex >= 0 && fileIndex < PsbFilePanel.Children.Count)
             {
                 var ui = (PsbFilePanel.Children[fileIndex] as StackPanel).Children[0];
-                MessageBox.Show($"ui is null? : {ui is null}");
                 ui.RaiseEvent(new RoutedEventArgs(Button.ClickEvent));
             }
         }
-
-        #endregion
 
         protected override void OnClosing(CancelEventArgs e)
         {
