@@ -21,8 +21,6 @@ namespace FreeMote.Tools.Viewer
 
     class Program
     {
-        // [DllImport("kernel32.dll", SetLastError = true, ExactSpelling = true)]
-        // private static extern bool FreeConsole();
         private static EmoteModelSetting settingWindow;
         private static NotifyIcon notifyIcon;
         private static App app;
