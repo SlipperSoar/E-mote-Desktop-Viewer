@@ -37,6 +37,7 @@ namespace FreeMote.Tools.Viewer
     public partial class MainWindow : Window
     {
         const string LastScaleKey = "LastEmoteScale";
+        const string LastPositionKey = "LastPosition";
         const float RefreshRate = 1000.0f / 65.0f; // 1/n秒カウントをmsへ変換。
         private const int Movement = 10;
 
@@ -90,6 +91,7 @@ namespace FreeMote.Tools.Viewer
             //Top = y1 - 600;
             // parse the XAML
             InitializeComponent();
+            Init();
             Width = Core.Width;
             Height = Core.Height;
 
@@ -126,6 +128,19 @@ namespace FreeMote.Tools.Viewer
             // begin rendering the custom D3D scene into the D3DImage
             BeginRenderingScene();
         }
+
+        #region Public Method
+
+        public void Init()
+        {
+            // Init Position
+            WindowStartupLocation = WindowStartupLocation.Manual;
+            var posStrs = UserRegistryKey.GetString(LastPositionKey).Split(',');
+            Left = int.Parse(posStrs[0]);
+            Top = int.Parse(posStrs[1]);
+        }
+
+        #endregion
 
         private void MainWindow_MouseRightButtonUp(object sender, MouseButtonEventArgs e)
         {
@@ -167,27 +182,6 @@ namespace FreeMote.Tools.Viewer
                 _player.OffsetCoord(-Movement, 0);
             }
 
-            // if (keyEventArgs.Key == Key.LeftCtrl)
-            // {
-            //     if (keyEventArgs.IsDown)
-            //     {
-            //         _measureMode = !_measureMode;
-            //     }
-            // 
-            //     if (_measureMode)
-            //     {
-            //         _player.SetScale(1);
-            //         _player.SetCoord(0, 0);
-            //         CenterMark.Visibility = Visibility.Visible;
-            //         CharaCenterMark.Visibility = Visibility.Visible;
-            //     }
-            //     else
-            //     {
-            //         CenterMark.Visibility = Visibility.Hidden;
-            //         CharaCenterMark.Visibility = Visibility.Hidden;
-            //     }
-            // }
-
             await Task.Delay(20);
             UpdatePosition();
         }
@@ -214,6 +208,7 @@ namespace FreeMote.Tools.Viewer
                 // _lastX = ex.X;
                 // _lastY = ex.Y;
                 DragMove();
+                UserRegistryKey.SetString(LastPositionKey, $"{Left},{Top}");
             }
             else
             {

@@ -30,7 +30,10 @@ namespace FreeMote.Tools.Viewer
         {
             InitIcon();
             app = new App();
-            settingWindow = new EmoteModelSetting();
+            settingWindow = new EmoteModelSetting()
+            {
+                WindowStartupLocation = WindowStartupLocation.CenterScreen
+            };
             settingWindow.AddMainWindowRunAction(() =>
             {
                 MainWindow mainWindow = new MainWindow();
