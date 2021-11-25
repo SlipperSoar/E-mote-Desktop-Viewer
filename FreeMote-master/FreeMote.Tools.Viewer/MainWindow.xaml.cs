@@ -135,9 +135,22 @@ namespace FreeMote.Tools.Viewer
         {
             // Init Position
             WindowStartupLocation = WindowStartupLocation.Manual;
-            var posStrs = UserRegistryKey.GetString(LastPositionKey).Split(',');
-            Left = int.Parse(posStrs[0]);
-            Top = int.Parse(posStrs[1]);
+            var posStr = UserRegistryKey.GetString(LastPositionKey);
+            if (string.IsNullOrEmpty(posStr))
+            {
+                return;
+            }
+
+            var posStrs = posStr.Split(',');
+            var left = int.Parse(posStrs[0]);
+            var top = int.Parse(posStrs[1]);
+
+            var mainWidth = (int) SystemParameters.WorkArea.Width;
+            var mainHeight = (int) SystemParameters.WorkArea.Height;
+            var width = (int) SystemParameters.VirtualScreenWidth; //得到全屏幕工作区域宽度
+            var height = (int) SystemParameters.VirtualScreenHeight; //得到全屏幕工作区域高度
+            Left = left >= width ? mainWidth / 2 : left;
+            Top = top >= height ? mainHeight / 2 : top;
         }
 
         #endregion
