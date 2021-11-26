@@ -221,7 +221,7 @@ namespace FreeMote.Tools.Viewer
                 // _lastX = ex.X;
                 // _lastY = ex.Y;
                 DragMove();
-                UserRegistryKey.SetString(LastPositionKey, $"{Left},{Top}");
+                UserRegistryKey.SetString(LastPositionKey, $"{(int) Left},{(int) Top}");
             }
             else
             {
