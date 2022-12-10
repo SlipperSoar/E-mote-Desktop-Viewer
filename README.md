@@ -2,6 +2,8 @@
 
 一个使用Unity开发的E-mote的简易桌面老婆（bushi）
 
+然而因为打包报错的问题先采用了现有的emote解决方案并做修改，位置在./FreeMote-master
+
 ## 使用的插件/SDK
 
 - E-mote官方的Unity SDK（Type2）
